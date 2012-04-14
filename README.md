@@ -3,16 +3,13 @@ Show the possibility to do static optimization of pipe-like constructs in haskel
 Based upon the concepts introduced in the HList paper such as TypeCast and OccursMay.
 
 
-Example
-=======
+### Example ###
 It includes an example with simple arithmetics (AddOne, AddTwo etc.). See Main.hs.
 
 Example usage: 
 ```haskell
 5 $> AddOne |> AddTwo |> ShowAsString |> eop  --normal execution
-
 5 $$> AddOne |> AddTwo |> ShowAsString |> eop --optimized
-
 optimize (AddOne |> AddOne |> eop)
 ```
 
