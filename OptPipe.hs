@@ -22,10 +22,10 @@ infixr 1 $$>
 
 
 -- | Implement instances to allow for optimizations. b must be set to HTrue. 
-class Optimizable a b c flag | a b -> c flag where
+class HBool flag => Optimizable a b c flag | a b -> c flag where
     mergePipe :: a -> b -> c
 --Fallback (for unoptimizable stuff)
-instance TypeCast flag HFalse => Optimizable a b c flag where
+instance (HBool flag, TypeCast flag HFalse) => Optimizable a b c flag where
     mergePipe = undefined
 
 
