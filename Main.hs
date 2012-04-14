@@ -6,6 +6,7 @@ module Main (
 
 import OptPipe
 import Pipe
+import HNat
 
 --Example usage: 5 $> AddOne |> AddTwo |> ShowAsString |> eop
 
@@ -45,3 +46,9 @@ main = do
     let e2' = 4 $$> p2
     print e2
     print e2'
+
+
+-- A simple example for handling of HNat
+class Counter c where counter :: c -> IO ()
+instance Counter HZero where counter _ = print "done"
+instance (HNat n, Counter n) => Counter (HSucc n) where counter n = print ("tick " ++ (show n)) >> counter (hPred n)
