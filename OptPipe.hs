@@ -73,4 +73,4 @@ instance (CompPipe p x2 o, PipeElement e1 i x1, PipeElement e2 x1 x2, PipeElemen
 instance (CompPipe p x2 o, PipeElement e1 i x1, PipeElement e2 x1 x2,
           OptPipe (CPCons e2 x1 x2 p) p', CompPipe p' x1 o) =>
         OptPipeCase HFalse e1 e2 p (CPCons e1 i x1 p') where
-    optPipeCase _ e1 e2 p = CPCons e1 $ optPipe $ CPCons e2 p
+    optPipeCase _ e1 e2 = CPCons e1 . optPipe . CPCons e2
