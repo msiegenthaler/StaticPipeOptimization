@@ -1,6 +1,6 @@
 Show the possibility to do static optimization of pipe-like constructs in haskell.
 
-Based upon the concepts introduced in the HList paper such as TypeCast and OccursMay.
+Based upon the concepts introduced in the HList paper (http://homepages.cwi.nl/~ralf/HList/paper.pdf) such as TypeCast and OccursMay.
 
 
 ### Example ###
