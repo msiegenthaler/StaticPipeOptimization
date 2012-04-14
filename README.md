@@ -1,6 +1,16 @@
-Show the possibility to do static optimization of pipe-like constructs in haskell.
+Show the possibility to do static compile time optimization of pipe-like constructs in haskell.
 
 Based upon the concepts introduced in the HList paper (http://homepages.cwi.nl/~ralf/HList/paper.pdf) such as TypeCast and OccursMay.
+
+
+The optimization is applied at compile time and affects the types:
+
+```
+*Main> AddOne |> AddTwo
+CPCons AddOne (CPCons AddTwo (CPNil))
+*Main> optimize $ AddOne |> AddTwo
+CPCons AddThree (CPNil)
+```
 
 
 ### Example ###
