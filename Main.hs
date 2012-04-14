@@ -8,7 +8,7 @@ import OptPipe
 import Pipe
 import HNat
 
---Example usage: 5 $> AddOne |> AddTwo |> ShowAsString |> eop
+--Example usage: 5 $> AddOne |> AddTwo |> ShowAsString
 
 --example elements
 data Id = Id deriving Show
@@ -70,20 +70,19 @@ instance PipeElement x a a => Optimizable x Id x a a a HTrue where
 
 -- end of optimizations
 
-
 main = do
     print "Examples (should all print 10)"
-    let p1 = AddOne |> AddTwo |> ShowAsString |> eop
+    let p1 = AddOne |> AddTwo |> ShowAsString
     let e1 = 7 $> p1
     let e1' = 7 $$> p1
     print e1
     print e1'
-    let p2 = AddOne |> AddOne |> AddOne |> AddThree |> eop
+    let p2 = AddOne |> AddOne |> AddOne |> AddThree
     let e2  = 4 $> p2
     let e2' = 4 $$> p2
     print e2
     print e2'
-    let p3 = AddOne |> ShowAsString |> IntFromString |> AddTwo |> eop
+    let p3 = AddOne |> ShowAsString |> IntFromString |> AddTwo
     let e3 = 7 $> p3
     let e3' = 7 $$> p3
     print e3
