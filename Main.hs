@@ -19,6 +19,8 @@ data AddTwo = AddTwo deriving Show
 instance Num a => PipeElement AddTwo a a where runPipe _ = (+2)
 data AddThree = AddThree deriving Show
 instance Num a => PipeElement AddThree a a where runPipe _ = (+3)
+data AddAny a = AddAny a deriving Show
+instance Num a => PipeElement (AddAny a) a a where runPipe (AddAny n) = (+n)
 data ShowAsString = ShowAsString deriving Show
 instance Show a => PipeElement ShowAsString a String where runPipe _ = show
 data IntFromString = IntFromString deriving Show
@@ -26,18 +28,47 @@ instance PipeElement IntFromString String Int where runPipe _ = read
 
 
 --optimizations
+
 instance Num a => Optimizable AddOne AddOne AddTwo a a a HTrue where
     mergePipe _ _ = AddTwo
+
 instance Num a => Optimizable AddOne AddTwo AddThree a a a HTrue where
     mergePipe _ _ = AddThree
 instance Num a => Optimizable AddTwo AddOne AddThree a a a HTrue where
     mergePipe _ _ = AddThree
+
+instance Num a => Optimizable AddTwo AddTwo (AddAny a) a a a HTrue where
+    mergePipe _ _ = AddAny 4
+instance Num a => Optimizable AddOne AddThree (AddAny a) a a a HTrue where
+    mergePipe _ _ = AddAny 4
+instance Num a => Optimizable AddThree AddOne (AddAny a) a a a HTrue where
+    mergePipe _ _ = AddAny 4
+
+instance Num a => Optimizable (AddAny a) AddOne (AddAny a) a a a HTrue where
+    mergePipe (AddAny a) _ = AddAny (a + 1)
+instance Num a => Optimizable (AddAny a) AddTwo (AddAny a) a a a HTrue where
+    mergePipe (AddAny a) _ = AddAny (a + 2)
+instance Num a => Optimizable (AddAny a) AddThree (AddAny a) a a a HTrue where
+    mergePipe (AddAny a) _ = AddAny (a + 3)
+instance Num a => Optimizable AddOne (AddAny a) (AddAny a) a a a HTrue where
+    mergePipe _ (AddAny a) = AddAny (a + 1)
+instance Num a => Optimizable AddTwo (AddAny a) (AddAny a) a a a HTrue where
+    mergePipe _ (AddAny a) = AddAny (a + 2)
+instance Num a => Optimizable AddThree (AddAny a) (AddAny a) a a a HTrue where
+    mergePipe _ (AddAny a) = AddAny (a + 3)
+
+instance Num a => Optimizable (AddAny a) (AddAny a) (AddAny a) a a a HTrue where
+    mergePipe (AddAny a) (AddAny b) = AddAny (a + b)
+
 instance (Show a, Num a) => Optimizable ShowAsString IntFromString Id a String Int HTrue where
     mergePipe _ _ = Id
+
 instance PipeElement x a a => Optimizable Id x x a a a HTrue where
     mergePipe _ x = x
 instance PipeElement x a a => Optimizable x Id x a a a HTrue where
     mergePipe x _ = x
+
+-- end of optimizations
 
 
 main = do
