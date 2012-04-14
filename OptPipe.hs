@@ -21,7 +21,7 @@ optimize = loopOpt
 infixr 1 $$>
 
 
--- | Implement instances to allow for optimizations. b must be set to HTrue. 
+-- | Implement instances to allow for optimizations. flag must be set to HTrue.
 class HBool flag => Optimizable a b c flag | a b -> c flag where
     mergePipe :: a -> b -> c
 --Fallback (for unoptimizable stuff)
