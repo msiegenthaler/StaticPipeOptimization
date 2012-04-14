@@ -39,7 +39,7 @@ instance (PipeElement p i o, PipeElement p' i o, IsOptimizable p flag, LoopOptCa
     loopOpt = loopOptCase (undefined::flag)
 class LoopOptCase flag p p' i o | flag p -> i o p' where
     loopOptCase :: flag -> p -> p'
-instance (LoopOpt p' p'' i o, OptPipe p p' i o) => LoopOptCase HTrue p p'' i o where
+instance (LoopOpt p' p'' i o, OptPipe p p') => LoopOptCase HTrue p p'' i o where
     loopOptCase _ p = loopOpt $ optPipe p
 instance LoopOptCase HFalse p p i o where
     loopOptCase _ = id
@@ -52,26 +52,25 @@ instance (HOr flag1 flag2 result, IsOptimizable (CPCons e2 x o p) flag1, Optimiz
 instance TypeCast flag HFalse => IsOptimizable other flag
 
 
-
-class (CompPipe p i o) => OptPipe p p' i o | p -> p' i o where
+class OptPipe p p' | p -> p' where
     optPipe :: p -> p'
-instance OptPipe CPNil CPNil a a where
+instance OptPipe CPNil CPNil where
     optPipe = id
-instance OptPipe (CPCons e i o CPNil) (CPCons e i o CPNil) i o where
+instance OptPipe (CPCons e i o CPNil) (CPCons e i o CPNil) where
     optPipe = id
-instance (CompPipe p x2 o, Optimizable e1 e2 e' i x1 x2 flag, OptPipeCase flag e1 e2 p p' i o) => 
-        OptPipe (CPCons e1 i x1 (CPCons e2 x1 x2 p)) p' i o where
+instance (CompPipe p x2 o, Optimizable e1 e2 e' i x1 x2 flag, OptPipeCase flag e1 e2 p p') =>
+        OptPipe (CPCons e1 i x1 (CPCons e2 x1 x2 p)) p' where
     optPipe (CPCons e1 (CPCons e2 p)) = optPipeCase (undefined::flag) e1 e2 p
 
-class OptPipeCase flag e1 e2 p p' i o | flag e1 e2 p -> p' i o where
+class OptPipeCase flag e1 e2 p p' | flag e1 e2 p -> p' where
     optPipeCase :: flag -> e1 -> e2 -> p -> p'
 --optimization
 instance (CompPipe p x2 o, PipeElement e1 i x1, PipeElement e2 x1 x2, PipeElement e' i x2, 
-          Optimizable e1 e2 e' i x1 x2 HTrue, OptPipe (CPCons e' i x2 p) p' i o) =>
-        OptPipeCase HTrue e1 e2 p p' i o where
+          Optimizable e1 e2 e' i x1 x2 HTrue, OptPipe (CPCons e' i x2 p) p') =>
+        OptPipeCase HTrue e1 e2 p p' where
     optPipeCase _ e1 e2 p = optPipe $ CPCons (mergePipe e1 e2) p
 --no optimization
 instance (CompPipe p x2 o, PipeElement e1 i x1, PipeElement e2 x1 x2,
-          OptPipe (CPCons e2 x1 x2 p) p' x1 o, CompPipe p' x1 o) =>
-        OptPipeCase HFalse e1 e2 p (CPCons e1 i x1 p') i o where
+          OptPipe (CPCons e2 x1 x2 p) p', CompPipe p' x1 o) =>
+        OptPipeCase HFalse e1 e2 p (CPCons e1 i x1 p') where
     optPipeCase _ e1 e2 p = CPCons e1 $ optPipe $ CPCons e2 p
