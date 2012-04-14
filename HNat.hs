@@ -1,27 +1,27 @@
 {-# LANGUAGE MultiParamTypeClasses, FunctionalDependencies, FlexibleInstances, UndecidableInstances, OverlappingInstances #-}
 
 module HNat (
-	HNat(..),
-	HZero,
-	HSucc,
-	hSucc,
-	hPred,
-	-- * Type Operations
-	HLessThan,
-	HGreaterThan,
-	HEqual,
-	-- * Numbers
-	H0, h0,
-	H1, h1,
-	H2, h2,
-	H3, h3,
-	H4, h4,
-	H5, h5,
-	H6, h6,
-	H7, h7,
-	H8, h8,
-	H9, h9,
-	H10, h10
+    HNat(..),
+    HZero,
+    HSucc,
+    hSucc,
+    hPred,
+    -- * Type Operations
+    HLessThan,
+    HGreaterThan,
+    HEqual,
+    -- * Numbers
+    H0, h0,
+    H1, h1,
+    H2, h2,
+    H3, h3,
+    H4, h4,
+    H5, h5,
+    H6, h6,
+    H7, h7,
+    H8, h8,
+    H9, h9,
+    H10, h10
 ) where
 
 import HBool
@@ -40,7 +40,7 @@ hPred _ = undefined
 class HNat n where hNatToIntegral :: n -> Integer
 instance HNat HZero where hNatToIntegral _ = 0
 instance HNat n => HNat (HSucc n) where
-	hNatToIntegral n = 1 + hNatToIntegral (hPred n)
+    hNatToIntegral n = 1 + hNatToIntegral (hPred n)
 
 instance Show HZero where show = ("h" ++) . show . hNatToIntegral
 instance HNat n => Show (HSucc n) where show = ("h" ++) . show . hNatToIntegral
