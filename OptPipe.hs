@@ -12,11 +12,11 @@ import HBool
 import TypeEq
 
 -- | Optimize the pipe
-optimize :: (PipeElement p i o, PipeElement p' i o, LoopOpt p p' i o) => p -> p'
+optimize :: (PipeElement p i o, PipeElement p' i o, LoopOpt p p') => p -> p'
 optimize = loopOpt
 
 -- | Run the pipe with optimization (input $$> pipe)
-($$>) :: (PipeElement p i o, PipeElement p' i o, LoopOpt p p' i o) => i -> p -> o
+($$>) :: (PipeElement p i o, PipeElement p' i o, LoopOpt p p') => i -> p -> o
 ($$>) i e = runPipe (optimize e) i
 infixr 1 $$>
 
@@ -32,16 +32,15 @@ instance (PipeElement a i x, PipeElement b x o, TypeCast flag HFalse) =>
 
 
 -- Repeatedly applies the optimization (optPipe) until no more optimization is possible
-class (PipeElement p i o, PipeElement p' i o) => LoopOpt p p' i o | p -> i o p' where
+class LoopOpt p p' | p -> p' where
     loopOpt :: p -> p'
-instance (PipeElement p i o, PipeElement p' i o, IsOptimizable p flag, LoopOptCase flag p p' i o) =>
-            LoopOpt p p' i o where
+instance (IsOptimizable p flag, LoopOptCase flag p p') => LoopOpt p p' where
     loopOpt = loopOptCase (undefined::flag)
-class LoopOptCase flag p p' i o | flag p -> i o p' where
+class LoopOptCase flag p p' | flag p -> p' where
     loopOptCase :: flag -> p -> p'
-instance (LoopOpt p' p'' i o, OptPipe p p') => LoopOptCase HTrue p p'' i o where
+instance (LoopOpt p' p'', OptPipe p p') => LoopOptCase HTrue p p'' where
     loopOptCase _ p = loopOpt $ optPipe p
-instance LoopOptCase HFalse p p i o where
+instance LoopOptCase HFalse p p where
     loopOptCase _ = id
 
 class IsOptimizable p result | p -> result
