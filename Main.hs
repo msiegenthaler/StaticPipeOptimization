@@ -32,6 +32,12 @@ instance Num a => Optimizable AddOne AddTwo AddThree a a a HTrue where
     mergePipe _ _ = AddThree
 instance Num a => Optimizable AddTwo AddOne AddThree a a a HTrue where
     mergePipe _ _ = AddThree
+instance (Show a, Num a) => Optimizable ShowAsString IntFromString Id a String Int HTrue where
+    mergePipe _ _ = Id
+instance PipeElement x a a => Optimizable Id x x a a a HTrue where
+    mergePipe _ x = x
+instance PipeElement x a a => Optimizable x Id x a a a HTrue where
+    mergePipe x _ = x
 
 
 main = do
@@ -46,6 +52,11 @@ main = do
     let e2' = 4 $$> p2
     print e2
     print e2'
+    let p3 = AddOne |> ShowAsString |> IntFromString |> AddTwo |> eop
+    let e3 = 7 $> p3
+    let e3' = 7 $$> p3
+    print e3
+    print e3'
 
 
 -- A simple example for handling of HNat
