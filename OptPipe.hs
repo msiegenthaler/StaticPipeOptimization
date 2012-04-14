@@ -29,7 +29,7 @@ instance TypeCast flag HFalse => Optimizable a b c flag where
     mergePipe = undefined
 
 
--- Repeatedly applies the optimization (optPipe) until no more optimization is possible
+-- | Repeatedly applies the optimization (optPipe) until no more optimization is possible
 class LoopOpt p p' | p -> p' where
     loopOpt :: p -> p'
 instance (IsOptimizable p flag, LoopOptCase flag p p') => LoopOpt p p' where
@@ -49,6 +49,7 @@ instance (HOr flag1 flag2 result, IsOptimizable (CPCons e2 x o p) flag1, Optimiz
 instance TypeCast flag HFalse => IsOptimizable other flag
 
 
+-- | Applies optimization to all pairs that have a matching Optimizable instance
 class OptPipe p p' | p -> p' where
     optPipe :: p -> p'
 instance OptPipe CPNil CPNil where
@@ -61,12 +62,12 @@ instance (CompPipe p x2 o, Optimizable e1 e2 e' flag, OptPipeCase flag e1 e2 p p
 
 class OptPipeCase flag e1 e2 p p' | flag e1 e2 p -> p' where
     optPipeCase :: flag -> e1 -> e2 -> p -> p'
---optimization
+-- optimization case
 instance (CompPipe p x2 o, PipeElement e1 i x1, PipeElement e2 x1 x2, PipeElement e' i x2,
           Optimizable e1 e2 e' HTrue, OptPipe (CPCons e' i x2 p) p') =>
         OptPipeCase HTrue e1 e2 p p' where
     optPipeCase _ e1 e2 p = optPipe $ CPCons (mergePipe e1 e2) p
---no optimization
+-- no optimization case
 instance (CompPipe p x2 o, PipeElement e1 i x1, PipeElement e2 x1 x2,
           OptPipe (CPCons e2 x1 x2 p) p', CompPipe p' x1 o) =>
         OptPipeCase HFalse e1 e2 p (CPCons e1 i x1 p') where
